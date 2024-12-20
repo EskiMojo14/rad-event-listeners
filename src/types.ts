@@ -28,17 +28,17 @@ export type EventListenerOrEventListenerObjectFor<
   E extends Event,
 > = EventListenerFor<T, E> | EventListenerObjectFor<E>;
 
-export type EventNames<T extends EventTargetLike> = {
+export type EventTypes<T extends EventTargetLike> = {
   [K in keyof T]: K extends `on${infer E}` ? E : never;
 }[keyof T];
 
 export type CanInferEvents<T extends EventTargetLike> = [
-  EventNames<T>,
+  EventTypes<T>,
 ] extends [never]
   ? false
   : true;
 
-export type EventForName<T extends EventTargetLike, E extends string> =
+export type EventForType<T extends EventTargetLike, E extends string> =
   T extends Partial<
     Record<`on${E}`, ((ev: infer F extends Event) => void) | null>
   >
@@ -48,7 +48,7 @@ export type EventForName<T extends EventTargetLike, E extends string> =
 export type HandlerMap<T extends EventTargetLike, E extends string> =
   CanInferEvents<T> extends true
     ? {
-        [K in E]: EventListenerOrEventListenerObjectFor<T, EventForName<T, K>>;
+        [K in E]: EventListenerOrEventListenerObjectFor<T, EventForType<T, K>>;
       }
     : Record<
         E,

@@ -1,16 +1,21 @@
 import { describe, expectTypeOf, it } from "vitest";
 import { radEventListeners } from ".";
 import { ToggleEvent, ToggleTarget, EnabledEvent } from "./test-utils";
+import { EventListenerObjectFor } from "./types";
 
 describe("radEventListeners", () => {
   it("infers correct event types", () => {
     const target = new ToggleTarget();
     const unsub = radEventListeners(target, {
       toggle(e) {
+        expectTypeOf(this).toEqualTypeOf<ToggleTarget>();
         expectTypeOf(e).toEqualTypeOf<ToggleEvent>();
       },
       enabled: {
         handleEvent(e) {
+          expectTypeOf(this).toEqualTypeOf<
+            EventListenerObjectFor<EnabledEvent>
+          >();
           expectTypeOf(e).toEqualTypeOf<EnabledEvent>();
         },
       },

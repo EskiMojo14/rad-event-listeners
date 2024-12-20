@@ -1,15 +1,24 @@
 import {
   CanInferEvents,
   EventListenerOrEventListenerObjectFor,
-  EventNames,
+  EventTypes,
   EventTargetLike,
   HandlerMap,
 } from "./types";
 import { ensureOptsObject, nonNullable } from "./util";
 
+export {
+  EventForType,
+  EventListenerFor,
+  EventListenerObjectFor,
+  EventListenerOrEventListenerObjectFor,
+  EventTargetLike,
+  EventTypes,
+} from "./types";
+
 export function radEventListeners<
   T extends EventTargetLike,
-  E extends CanInferEvents<T> extends true ? EventNames<T> : string,
+  E extends CanInferEvents<T> extends true ? EventTypes<T> : string,
 >(
   target: T,
   handlers: HandlerMap<T, E>,
