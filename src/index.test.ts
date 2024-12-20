@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { radEventListeners } from ".";
 import { ToggleEvent, ToggleTarget } from "./test-utils";
+import { EventListenerObjectFor } from "./types";
 
 describe("radEventListeners", () => {
   it("should add event listeners, which can be individually removed", () => {
@@ -75,5 +76,22 @@ describe("radEventListeners", () => {
     unsub();
     target.toggle();
     expect(onToggle).toHaveBeenCalledTimes(1);
+  });
+  it("should allow custom handler objects", () => {
+    class Handler implements EventListenerObjectFor<Event> {
+      event: Event | null = null;
+      handleEvent(this: this, e: Event) {
+        this.event = e;
+      }
+      options = { once: true };
+    }
+    const target = new ToggleTarget();
+    const handler = new Handler();
+    radEventListeners(target, {
+      toggle: handler,
+    });
+
+    target.toggle();
+    expect(handler.event).toBeInstanceOf(ToggleEvent);
   });
 });
