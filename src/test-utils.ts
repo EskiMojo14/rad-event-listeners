@@ -30,7 +30,7 @@ export class ToggleTarget
 
     this.dispatchEvent(new ToggleEvent(this.enabled));
 
-    this.enabled && this.dispatchEvent(new EnabledEvent());
+    if (this.enabled) this.dispatchEvent(new EnabledEvent());
   }
   ontoggle: ((ev: ToggleEvent) => void) | null = null;
   onenabled: ((ev: EnabledEvent) => void) | null = null;

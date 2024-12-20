@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { radEventListeners } from ".";
 import { ToggleEvent, ToggleTarget } from "./test-utils";
-import { EventListenerObjectFor } from "./types";
+import type { EventListenerObjectFor } from "./types";
+import { radEventListeners } from ".";
 
 describe("radEventListeners", () => {
   it("should add event listeners, which can be individually removed", () => {

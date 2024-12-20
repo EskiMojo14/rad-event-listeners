@@ -1,7 +1,8 @@
 import { describe, expectTypeOf, it } from "vitest";
+import type { ToggleEvent, EnabledEvent } from "./test-utils";
+import { ToggleTarget } from "./test-utils";
+import type { EventListenerObjectFor } from "./types";
 import { radEventListeners } from ".";
-import { ToggleEvent, ToggleTarget, EnabledEvent } from "./test-utils";
-import { EventListenerObjectFor } from "./types";
 
 describe("radEventListeners", () => {
   it("infers correct event types", () => {
@@ -20,8 +21,8 @@ describe("radEventListeners", () => {
         },
       },
 
-      // not an event
-      // @ts-expect-error
+      // @ts-expect-error not an event
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
       something() {},
     });
     expectTypeOf(unsub).toMatchTypeOf<() => void>();

@@ -1,4 +1,4 @@
-import {
+import type {
   CanInferEvents,
   EventListenerOrEventListenerObjectFor,
   EventTypes,
@@ -51,9 +51,9 @@ export function radEventListeners<
       signal: AbortSignal.any(signals),
     };
 
-    abortsByEvent[event] = () => abortController.abort();
+    abortsByEvent[event] = () => { abortController.abort(); };
 
     target.addEventListener(event, handler, options);
   }
-  return Object.assign(() => globalAc.abort(), abortsByEvent);
+  return Object.assign(() => { globalAc.abort(); }, abortsByEvent);
 }
