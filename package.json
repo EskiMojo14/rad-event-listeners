@@ -2,7 +2,10 @@
   "name": "rad-event-listeners",
   "version": "1.0.0",
   "description": "Utility to add multiple event listeners",
-  "repository": "https://github.com/EskiMojo14/rad-event-listeners.git",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EskiMojo14/rad-event-listeners.git"
+  },
   "author": "Ben Durrant <ben.j.durrant@gmail.com>",
   "license": "MIT",
   "type": "module",
