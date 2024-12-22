@@ -13,11 +13,13 @@ const unsub = radEventListeners(
   window,
   {
     click: (ev) => console.log(ev),
-    keydown: {
-      handleEvent: (ev) => console.log(ev),
+    keydown: [
+      {
+        handleEvent: (ev) => console.log(ev),
+      },
       // Event options
-      options: { once: true },
-    },
+      { once: true },
+    ],
   },
   // Global options
   { passive: true },

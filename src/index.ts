@@ -4,6 +4,7 @@ import type {
   EventTypes,
   EventTargetLike,
   HandlerMap,
+  EventListenerTuple,
 } from "./types";
 import { ensureOptsObject, nonNullable } from "./util";
 
@@ -14,6 +15,7 @@ export {
   EventListenerOrEventListenerObjectFor,
   EventTargetLike,
   EventTypes,
+  EventListenerTuple,
 } from "./types";
 
 export function radEventListeners<
@@ -28,21 +30,21 @@ export function radEventListeners<
   const globalAc = new AbortController();
   const abortsByEvent: Record<string, () => void> = {};
 
-  for (const [event, handler] of Object.entries<
-    EventListenerOrEventListenerObjectFor<T, any>
+  for (const [event, handlerEntry] of Object.entries<
+    EventListenerTuple<EventListenerOrEventListenerObjectFor<T, any>>
   >(handlers)) {
     const abortController = new AbortController();
+    const [handler, handlerOptions] = Array.isArray(handlerEntry)
+      ? handlerEntry
+      : [handlerEntry];
 
-    const eventOptions =
-      typeof handler === "function"
-        ? undefined
-        : ensureOptsObject(handler.options);
+    const eventOptions = ensureOptsObject(handlerOptions);
 
     const signals = [
       globalAc.signal,
       abortController.signal,
       globalOptions.signal,
-      eventOptions?.signal,
+      eventOptions.signal,
     ].filter(nonNullable);
 
     const options = {
@@ -51,9 +53,13 @@ export function radEventListeners<
       signal: AbortSignal.any(signals),
     };
 
-    abortsByEvent[event] = () => { abortController.abort(); };
+    abortsByEvent[event] = () => {
+      abortController.abort();
+    };
 
     target.addEventListener(event, handler, options);
   }
-  return Object.assign(() => { globalAc.abort(); }, abortsByEvent);
+  return Object.assign(() => {
+    globalAc.abort();
+  }, abortsByEvent);
 }

@@ -20,13 +20,18 @@ export type BivariantEventListenerFor<
 
 export interface EventListenerObjectFor<E extends Event> {
   handleEvent(this: this, ev: E): void;
-  options?: boolean | AddEventListenerOptions;
 }
 
 export type EventListenerOrEventListenerObjectFor<
   T extends EventTargetLike,
   E extends Event,
 > = EventListenerFor<T, E> | EventListenerObjectFor<E>;
+
+export type EventListenerTuple<
+  Listener extends EventListenerOrEventListenerObjectFor<any, any>,
+> =
+  | Listener
+  | [listener: Listener, options?: boolean | AddEventListenerOptions];
 
 export type EventTypes<T extends EventTargetLike> = {
   [K in keyof T]: K extends `on${infer E}` ? E : never;
@@ -48,9 +53,13 @@ export type EventForType<T extends EventTargetLike, E extends string> =
 export type HandlerMap<T extends EventTargetLike, E extends string> =
   CanInferEvents<T> extends true
     ? {
-        [K in E]: EventListenerOrEventListenerObjectFor<T, EventForType<T, K>>;
+        [K in E]: EventListenerTuple<
+          EventListenerOrEventListenerObjectFor<T, EventForType<T, K>>
+        >;
       }
     : Record<
         E,
-        EventListenerObjectFor<Event> | BivariantEventListenerFor<T, Event>
+        EventListenerTuple<
+          EventListenerObjectFor<Event> | BivariantEventListenerFor<T, Event>
+        >
       >;

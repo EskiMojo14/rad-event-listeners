@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { ToggleEvent, ToggleTarget } from "./test-utils";
-import type { EventListenerObjectFor } from "./types";
+import { EnabledEvent, ToggleEvent, ToggleTarget } from "./test-utils";
 import { radEventListeners } from ".";
 
 describe("radEventListeners", () => {
@@ -8,9 +7,10 @@ describe("radEventListeners", () => {
     const target = new ToggleTarget();
     const onToggle = vi.fn();
     const onEnabled = vi.fn();
+    const enabledHandler = { handleEvent: onEnabled };
     const unsub = radEventListeners(target, {
       toggle: onToggle,
-      enabled: onEnabled,
+      enabled: enabledHandler,
     });
 
     target.toggle();
@@ -18,6 +18,8 @@ describe("radEventListeners", () => {
     expect(onToggle).toHaveBeenCalledWithContext(target);
     expect(onToggle).toHaveBeenCalledWith(expect.any(ToggleEvent));
     expect(onEnabled).toHaveBeenCalledTimes(1);
+    expect(onEnabled).toHaveBeenCalledWithContext(enabledHandler);
+    expect(onEnabled).toHaveBeenCalledWith(expect.any(EnabledEvent));
 
     unsub.toggle();
     target.toggle();
@@ -36,17 +38,12 @@ describe("radEventListeners", () => {
   it("should add event listeners with options", () => {
     const target = new ToggleTarget();
     const onToggle = vi.fn();
-    const handler = {
-      handleEvent: onToggle,
-      options: { once: true },
-    };
     const unsub = radEventListeners(target, {
-      toggle: handler,
+      toggle: [onToggle, { once: true }],
     });
 
     target.toggle();
     expect(onToggle).toHaveBeenCalledTimes(1);
-    expect(onToggle).toHaveBeenCalledWithContext(handler);
     expect(onToggle).toHaveBeenCalledWith(expect.any(ToggleEvent));
 
     target.toggle();
@@ -76,22 +73,5 @@ describe("radEventListeners", () => {
     unsub();
     target.toggle();
     expect(onToggle).toHaveBeenCalledTimes(1);
-  });
-  it("should allow custom handler objects", () => {
-    class Handler implements EventListenerObjectFor<Event> {
-      event: Event | null = null;
-      handleEvent(this: this, e: Event) {
-        this.event = e;
-      }
-      options = { once: true };
-    }
-    const target = new ToggleTarget();
-    const handler = new Handler();
-    radEventListeners(target, {
-      toggle: handler,
-    });
-
-    target.toggle();
-    expect(handler.event).toBeInstanceOf(ToggleEvent);
   });
 });
