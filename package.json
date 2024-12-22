@@ -1,6 +1,6 @@
 {
   "name": "rad-event-listeners",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Utility to add multiple event listeners",
   "repository": {
     "type": "git",
