@@ -6,7 +6,7 @@ import type {
   HandlerMap,
   EventListenerTuple,
 } from "./types";
-import { ensureOptsObject, nonNullable } from "./util";
+import { ensureOptsObject, mergeOptions } from "./util";
 
 export {
   EventForType,
@@ -26,7 +26,8 @@ export function radEventListeners<
   handlers: HandlerMap<T, E>,
   globalOpts?: boolean | AddEventListenerOptions,
 ): (() => void) & Record<E, () => void> {
-  const globalOptions = ensureOptsObject(globalOpts);
+  globalOpts = ensureOptsObject(globalOpts);
+
   const globalAc = new AbortController();
   const abortsByEvent: Record<string, () => void> = {};
 
@@ -34,30 +35,23 @@ export function radEventListeners<
     EventListenerTuple<EventListenerOrEventListenerObjectFor<T, any>>
   >(handlers)) {
     const abortController = new AbortController();
-    const [handler, handlerOptions] = Array.isArray(handlerEntry)
-      ? handlerEntry
-      : [handlerEntry];
-
-    const eventOptions = ensureOptsObject(handlerOptions);
-
-    const signals = [
-      globalAc.signal,
-      abortController.signal,
-      globalOptions.signal,
-      eventOptions.signal,
-    ].filter(nonNullable);
-
-    const options = {
-      ...globalOptions,
-      ...eventOptions,
-      signal: AbortSignal.any(signals),
-    };
 
     abortsByEvent[event] = () => {
       abortController.abort();
     };
 
-    target.addEventListener(event, handler, options);
+    const [handler, handlerOpts] = Array.isArray(handlerEntry)
+      ? handlerEntry
+      : [handlerEntry];
+
+    target.addEventListener(
+      event,
+      handler,
+      mergeOptions(globalOpts, ensureOptsObject(handlerOpts), [
+        abortController.signal,
+        globalAc.signal,
+      ]),
+    );
   }
   return Object.assign(() => {
     globalAc.abort();
@@ -71,18 +65,14 @@ export function rads<T extends EventTargetLike>(
 ) {
   const ac = new AbortController();
   let called = false as boolean;
-  const globalOptions = ensureOptsObject(globalOpts);
+  globalOpts = ensureOptsObject(globalOpts);
   setup((type, listener, options) => {
     called = true;
-    options = ensureOptsObject(options);
-    const signals = [ac.signal, globalOptions.signal, options.signal].filter(
-      nonNullable,
+    target.addEventListener(
+      type,
+      listener,
+      mergeOptions(globalOpts, ensureOptsObject(options), [ac.signal]),
     );
-    target.addEventListener(type, listener, {
-      ...globalOptions,
-      ...options,
-      signal: signals.length === 1 ? signals[0] : AbortSignal.any(signals),
-    });
   });
   if (!called) {
     throw new Error("Expected at least one event listener to be added");
