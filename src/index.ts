@@ -85,7 +85,7 @@ export function rads<T extends EventTargetLike>(
     });
   });
   if (!called) {
-    throw new Error("Expected addEventListener to be called at least once");
+    throw new Error("Expected at least one event listener to be added");
   }
   return () => {
     ac.abort();

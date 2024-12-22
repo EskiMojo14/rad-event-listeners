@@ -158,6 +158,6 @@ describe("rads", () => {
       rads(target, () => {
         // empty
       }),
-    ).toThrowError("Expected addEventListener to be called at least once");
+    ).toThrowError("Expected at least one event listener to be added");
   });
 });
