@@ -11,11 +11,13 @@ import { ensureOptsObject, mergeOptions } from "./util";
 export {
   EventForType,
   EventListenerFor,
+  BivariantEventListenerFor,
   EventListenerObjectFor,
   EventListenerOrEventListenerObjectFor,
   EventTargetLike,
   EventTypes,
   EventListenerTuple,
+  HandlerMap,
 } from "./types";
 
 export function radEventListeners<
