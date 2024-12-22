@@ -1,7 +1,7 @@
 export interface EventTargetLike {
   addEventListener(
     type: string,
-    listener: EventListenerOrEventListenerObject,
+    callback: EventListenerOrEventListenerObject,
     options?: boolean | AddEventListenerOptions,
   ): void;
 }
@@ -31,7 +31,7 @@ export type EventListenerTuple<
   Listener extends EventListenerOrEventListenerObjectFor<any, any>,
 > =
   | Listener
-  | [listener: Listener, options?: boolean | AddEventListenerOptions];
+  | [callback: Listener, options?: boolean | AddEventListenerOptions];
 
 export type EventTypes<T extends EventTargetLike> = {
   [K in keyof T]: K extends `on${infer E}` ? E : never;

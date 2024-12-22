@@ -63,3 +63,31 @@ export function radEventListeners<
     globalAc.abort();
   }, abortsByEvent);
 }
+
+export function rads<T extends EventTargetLike>(
+  target: T,
+  setup: (addEventListener: T["addEventListener"]) => void,
+  globalOpts?: boolean | AddEventListenerOptions,
+) {
+  const ac = new AbortController();
+  let called = false as boolean;
+  const globalOptions = ensureOptsObject(globalOpts);
+  setup((type, listener, options) => {
+    called = true;
+    options = ensureOptsObject(options);
+    const signals = [ac.signal, globalOptions.signal, options.signal].filter(
+      nonNullable,
+    );
+    target.addEventListener(type, listener, {
+      ...globalOptions,
+      ...options,
+      signal: signals.length === 1 ? signals[0] : AbortSignal.any(signals),
+    });
+  });
+  if (!called) {
+    throw new Error("Expected addEventListener to be called at least once");
+  }
+  return () => {
+    ac.abort();
+  };
+}
