@@ -29,7 +29,7 @@
   ],
   "scripts": {
     "prepare": "husky",
-    "prebuild": "yarn type",
+    "prebuild": "pnpm type",
     "build": "tsup",
     "test": "vitest",
     "lint": "eslint --flag unstable_ts_config",
@@ -38,7 +38,7 @@
     "attw": "attw",
     "publint": "publint",
     "type": "tsc",
-    "prepack": "yarn publint"
+    "prepack": "pnpm publint"
   },
   "prettier": {},
   "lint-staged": {
@@ -76,5 +76,5 @@
     "typescript-eslint": "^8.18.1",
     "vitest": "^2.1.8"
   },
-  "packageManager": "yarn@4.6.0"
+  "packageManager": "pnpm@10.5.2+sha256.79a98daa90248b50815e31460790f118c56fe099113370826caa0153be6daba5"
 }
